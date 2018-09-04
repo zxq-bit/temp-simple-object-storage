@@ -8,30 +8,29 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/shirou/gopsutil/disk"
+	"github.com/caicloud/simple-object-storage/pkg/util"
+)
+
+const (
+	bucketNum = 512
 )
 
 type Storage struct {
-	base      string
-	bucketNum int
+	base string
 
 	lastKey uint32
 	prefix  string
 }
 
-func NewStorage(base string, bucketNum int, rootAllowed bool) (*Storage, error) {
+func NewStorage(base string, rootAllowed bool) (*Storage, error) {
 	if base = filepath.Clean(base); len(base) == 0 {
 		return nil, fmt.Errorf("empty base dir")
 	}
-	if bucketNum < 1 {
-		return nil, fmt.Errorf("bad bucket num %d", bucketNum)
-	}
 	s := &Storage{
-		base:      base,
-		bucketNum: bucketNum,
+		base: base,
 	}
 	if !rootAllowed {
-		e := s.checkDevice()
+		e := util.IsDeviceUnderRoot(s.base)
 		if e != nil {
 			return nil, e
 		}
@@ -52,36 +51,12 @@ func NewStorage(base string, bucketNum int, rootAllowed bool) (*Storage, error) 
 }
 
 func (s *Storage) initDir() error {
-	for i := 0; i < s.bucketNum; i++ {
+	for i := 0; i < bucketNum; i++ {
 		dp := makeDirPath(s.base, i)
 		e := os.MkdirAll(dp, 0755)
 		if e != nil && !os.IsExist(e) {
 			return e
 		}
-	}
-	return nil
-}
-
-func (s *Storage) checkDevice() error {
-	const root = "/"
-	var (
-		rootVolName string
-		curVolName  string
-	)
-	ps, e := disk.Partitions(true)
-	if e != nil {
-		return e
-	}
-	for i := range ps {
-		if ps[i].Mountpoint == root {
-			rootVolName = ps[i].Device
-		}
-		if filepath.HasPrefix(s.base, ps[i].Mountpoint) && (len(curVolName) == 0 || ps[i].Mountpoint != root) {
-			curVolName = ps[i].Device
-		}
-	}
-	if curVolName == rootVolName {
-		return fmt.Errorf("storage is under root device, \"%s\"==\"%s\"", curVolName, rootVolName)
 	}
 	return nil
 }

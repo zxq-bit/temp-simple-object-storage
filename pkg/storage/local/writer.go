@@ -19,10 +19,11 @@ type Writer struct {
 	f *os.File
 }
 
-func NewWriter(base, key string) (*Writer, error) {
+func NewWriter(base, bucket, key string) (*Writer, error) {
 	base = filepath.Clean(base)
+	bucket = filepath.Clean(bucket)
 	key = filepath.Clean(key)
-	fp := filepath.Join(base, key)
+	fp := filepath.Join(base, bucket, key)
 	f, e := os.OpenFile(fp, os.O_CREATE|os.O_RDWR|os.O_EXCL, 0664)
 	if e != nil {
 		return nil, e
