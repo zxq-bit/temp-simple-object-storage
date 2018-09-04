@@ -3,24 +3,26 @@ package apis
 import "time"
 
 type Bucket struct {
-	ID    int64
-	Name  string
-	Owner string
+	Name  string `json:"name"`
+	Owner string `json:"owner"`
+	ACL   ACL    `json:"acl"`
+}
+
+type ACL struct {
+	PublicRW uint8 `json:"publicRW"`
 }
 
 type Object struct {
-	ID         string
-	Key        string
-	Bucket     int64
-	Size       int64
-	Checksum   string
-	UpdateTime time.Time
-
-	Blocks []Block
+	Key        string    `json:"key"`
+	Bucket     string    `json:"bucket"`
+	Size       int64     `json:"size"`
+	Checksum   string    `json:"checksum"`
+	UpdateTime time.Time `json:"updateTime"`
+	Blocks     []Block   `json:"blocks"`
 }
 
 type Block struct {
-	Key      string
-	Size     int64
-	Checksum string
+	Key      string `json:"key"`
+	Size     int64  `json:"size"`
+	Checksum string `json:"checksum"`
 }
