@@ -9,18 +9,27 @@ import (
 
 type Config struct {
 	// db
-	DbString string
+	DatabaseString string `desc:"database connect string, dir path for local db"`
+	// storage
+	StorageString string `desc:"storage connect string, dir path for local storage or mounted volume"`
+	// all
+	RootAllowed bool `desc:"local db/storage check option, is allow to use path under root"`
 }
 
 func NewDefaultConfig() *Config {
 	return &Config{
-		DbString: constants.DefaultDbString,
+		DatabaseString: constants.DefaultDatabaseString,
+		StorageString:  constants.DefaultStorageString,
+		RootAllowed:    false,
 	}
 }
 
 func (c *Config) Validate() error {
-	if len(c.DbString) == 0 {
+	if len(c.DatabaseString) == 0 {
 		return fmt.Errorf("empty database string")
+	}
+	if len(c.StorageString) == 0 {
+		return fmt.Errorf("empty storage string")
 	}
 	return nil
 }

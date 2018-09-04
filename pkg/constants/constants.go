@@ -19,6 +19,9 @@ const (
 	ParameterRequestBody = "req"
 	ParameterXUser       = "X-User"
 	ParameterXTenant     = "X-Tenant"
+
+	DefaultParameterStart = 0
+	DefaultParameterLimit = 1000
 )
 
 const (
@@ -26,9 +29,6 @@ const (
 	DefaultKubeConfig = ""
 	DefaultListenPort = 80
 
-	DefaultDbString = ""
-
-	DefaultLocalStorageBucketNum = 100
-
-	FileTimestampFormat = "20060102150405" // "20060102150405.000" // for js do not accept '.' in value
+	DefaultDatabaseString = "/caicloud/simple-object-storage/db"
+	DefaultStorageString  = "/caicloud/simple-object-storage/mnt/glusterfs-single"
 )
